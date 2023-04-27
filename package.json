@@ -12,12 +12,7 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "visualize.helloWorld",
-        "title": "Hello World"
-      }
-    ],
+    "commands": [],
     "viewsContainers": {
       "activitybar": [
         {
@@ -30,7 +25,7 @@
     "views": {
       "visualize-prompt": [
         {
-          "id": "visualize-sidebar",
+          "id": "visualize-webview",
           "name": "visualize sidebar"
         }
       ]
@@ -56,5 +51,9 @@
     "mocha": "^10.2.0",
     "typescript": "^4.9.5",
     "@vscode/test-electron": "^2.3.0"
+  },
+  "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.2.1",
+    "uuid": "^9.0.0"
   }
 }

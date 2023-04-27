@@ -6,21 +6,55 @@ import * as vscode from 'vscode';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "visualize" is now active!');
+	const viewProvider = new VisualizeWebViewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(VisualizeWebViewProvider.viewType, viewProvider)
+	);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('visualize.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('This is niceee!');
-	});
-
-	context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+class VisualizeWebViewProvider implements vscode.WebviewViewProvider {
+	public static readonly viewType = 'visualize.visualize-webview';
+	private _view?: vscode.WebviewView;
+
+	constructor(private readonly _extensionUri: vscode.Uri) {}
+
+	public resolveWebviewView(
+		webviewView: vscode.WebviewView,
+		context: vscode.WebviewViewResolveContext,
+		_token: vscode.CancellationToken,
+	) {
+		this._view = webviewView;
+
+		webviewView.webview.options = {
+			// Allow scripts in the webview
+			enableScripts: true,
+
+			localResourceRoots: [
+				this._extensionUri
+			]
+		};
+
+		webviewView.webview.html = this.getWebViewContent(webviewView.webview);
+	}
+
+	private getWebViewContent(webview: vscode.Webview) {
+		return `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Visualize Sidebar</title>
+			</head>
+			<body>
+				<h1>Hello World!</h1>
+			</body>
+			</html>
+		`;
+	}
+}
